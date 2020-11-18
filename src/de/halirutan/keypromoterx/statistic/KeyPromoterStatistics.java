@@ -16,13 +16,18 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.RoamingType;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.MapAnnotation;
 import com.intellij.util.xmlb.annotations.Transient;
 import de.halirutan.keypromoterx.KeyPromoterAction;
+import de.halirutan.keypromoterx.KeyPromoterBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -114,6 +119,31 @@ public class KeyPromoterStatistics implements PersistentStateComponent<KeyPromot
       suppressed.clear();
     }
     myChangeSupport.firePropertyChange(STATISTIC, null, null);
+  }
+
+  public static Clipboard getSystemClipboard() {
+    return Toolkit.getDefaultToolkit().getSystemClipboard();
+  }
+
+  @Transient
+  public void printStatistic() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("# Key Promoter X Shortcuts\n\n");
+    stringBuilder.append("|Description|Shortcut|\n|---|:---|\n");
+
+    statistics.values().stream().forEach(
+      item -> {
+        stringBuilder.append(item.description);
+        stringBuilder.append("|");
+        stringBuilder.append(item.shortCut);
+        stringBuilder.append("\n");
+      }
+    );
+    Clipboard clipboard = getSystemClipboard();
+    clipboard.setContents(new StringSelection(stringBuilder.toString()), null);
+    Messages.showInfoMessage(
+      KeyPromoterBundle.message("kp.dialog.copyclipboard.statistic.text"),
+      KeyPromoterBundle.message("kp.dialog.copyclipboard.statistic.title"));
   }
 
   @Transient

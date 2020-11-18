@@ -44,11 +44,13 @@ class KeyPromoterToolWindowPanel implements Disposable, SnoozeNotifier.Handler {
   private JPanel panel;
   private JList statisticsList;
   private JButton resetStatisticsButton;
+  private JButton printStatisticsButton;
   private JList suppressedList;
   private JCheckBox snoozeCheckBox;
 
   KeyPromoterToolWindowPanel() {
     resetStatisticsButton.addActionListener(e -> resetStats());
+    printStatisticsButton.addActionListener(e -> printStats());
     Topics.subscribe(SnoozeNotifier.Handler.SNOOZE_TOPIC, this, this);
     snoozeCheckBox.addItemListener(e -> SnoozeNotifier.setSnoozed(snoozeCheckBox.isSelected()));
   }
@@ -65,6 +67,10 @@ class KeyPromoterToolWindowPanel implements Disposable, SnoozeNotifier.Handler {
         Messages.getQuestionIcon()) == Messages.YES) {
       statService.resetStatistic();
     }
+  }
+
+  private void printStats() {
+    statService.printStatistic();
   }
 
   private void createUIComponents() {
